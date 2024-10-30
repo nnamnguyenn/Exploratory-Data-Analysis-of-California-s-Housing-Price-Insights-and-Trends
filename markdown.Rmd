@@ -1,0 +1,98 @@
+---
+title: "Exploratory Data Analysis of California's Housing Price: Insights and Trends"
+author: "Nam Nguyen (USF)"
+date: "October, 2024"
+output: 
+  html_document:
+    theme: yeti
+runtime: shiny
+---
+
+```{r setup, include = FALSE}
+source("main.R")
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## **Introduction**
+
+This project aims to perform *Exploratory Data Analysis* with the **California House Price** dataset.
+
+Data source: <https://www.kaggle.com/datasets/shibumohapatra/house-price>
+
+Github file: <https://github.com/nnamnguyenn/Exploratory-Data-Analysis-of-California-s-Housing-Price-Insights-and-Trends.git> 
+
+Library used: `readr`, `psych`, `corrplot`, `tidyverse`, `ggplot2`, `knitr`, `plotly`, `ggthemes`, `DT`, `DataExplorer`
+
+## **Summary Statistics Table**
+
+### Overview
+
+```{r}
+df |> DataExplorer::introduce() |> knitr::kable()
+
+```
+
+### Continuous Data
+
+```{r}
+df |> psych::describe() |> round(2) |> knitr::kable()
+
+```
+
+### Categorical Data
+
+```{r, , fig.width= 5, fig.height= 5, fig.align='center'}
+df |> DataExplorer::plot_bar(theme_config = theme_bw()) 
+
+```
+
+## **Distribution**
+
+```{r, echo = FALSE}
+selectInput("display_value", label = "View: ",
+            choices = setdiff(colnames(df), c("longitude", "latitude", "ocean_proximity", "total_bedrooms")), selected = 'median_house_value')
+selectInput("break_down", label = "Distribution by Ocean Proximity: ",
+            choices = c(TRUE, FALSE), selected = FALSE)
+
+```
+
+```{r, fig.show='hold', echo = FALSE}
+
+renderPlotly(distribution_graph(input$display_value, input$break_down))
+renderPlot(box_graph(input$display_value))
+
+```
+
+## **Correlation**
+
+### Matrix
+
+```{r, fig.show = 'hold'}
+df |> select(!c(longitude, latitude, ocean_proximity, total_bedrooms)) |> cor() |> round(3) |> kable()
+```
+
+### Heatmap
+
+```{r, fig.show = 'hold', fig.align='center'}
+df |> select(!c(longitude, latitude, ocean_proximity, total_bedrooms)) |> cor() |> corrplot(method = 'color', order = 'AOE', type = "lower", tl.col = "black", tl.srt = 0.00001, tl.cex = 0.75)
+
+```
+
+## **Pair Plot**
+
+```{r, fig.width= 10, fig.height= 10}
+df |> select(!c(longitude, latitude, ocean_proximity, total_bedrooms)) |> slice_sample(prop = .05) |> pairs( panel = function(x, y) {
+  points(x, y, col = "blue")  
+  abline(lm(y ~ x), col = "red")})
+```
+
+## **Data Source**
+
+```{r, echo = FALSE, fig.align='center'}
+renderDT({
+  datatable(df)
+})
+```
