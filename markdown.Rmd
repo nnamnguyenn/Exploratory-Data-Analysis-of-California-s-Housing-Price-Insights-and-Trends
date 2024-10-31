@@ -18,27 +18,32 @@ knitr::opts_chunk$set(
 
 ## **Introduction**
 
-This project aims to perform *Exploratory Data Analysis* with the **California House Price** dataset.
+This project aims to perform *Exploratory Data Analysis* and *Linear Regression* with the **California House Price** dataset.
 
-Data source: <https://www.kaggle.com/datasets/shibumohapatra/house-price>
+Data source: [Link](https://www.kaggle.com/datasets/shibumohapatra/house-price)
 
-Github file: <https://github.com/nnamnguyenn/Exploratory-Data-Analysis-of-California-s-Housing-Price-Insights-and-Trends.git> 
+Github file: [Link](https://github.com/nnamnguyenn/Exploratory-Data-Analysis-of-California-s-Housing-Price-Insights-and-Trends.git)
 
 Library used: `readr`, `psych`, `corrplot`, `tidyverse`, `ggplot2`, `knitr`, `plotly`, `ggthemes`, `DT`, `DataExplorer`
+
+## California House Price Dataset
+
+```{r}
+df |> head() |> kable() 
+```
 
 ## **Summary Statistics Table**
 
 ### Overview
 
-```{r}
+```{r,fig.show = "hold"}
 df |> DataExplorer::introduce() |> knitr::kable()
-
 ```
 
 ### Continuous Data
 
 ```{r}
-df |> psych::describe() |> round(2) |> knitr::kable()
+df |> psych::describe() |> round(2) |> kable()
 
 ```
 
@@ -87,6 +92,33 @@ df |> select(!c(longitude, latitude, ocean_proximity, total_bedrooms)) |> cor() 
 df |> select(!c(longitude, latitude, ocean_proximity, total_bedrooms)) |> slice_sample(prop = .05) |> pairs( panel = function(x, y) {
   points(x, y, col = "blue")  
   abline(lm(y ~ x), col = "red")})
+```
+
+## **Linear Regression (Median House Value \~ Median Income)**
+
+```{r, eval=FALSE}
+lm(median_house_value ~ median_income, data = df) |> summary() |> print()
+```
+
+```{r, echo = FALSE}
+linearReg <- lm(median_house_value ~ median_income, data = df) 
+linearReg |> summary() |> print()
+```
+
+### ANOVA test
+
+```{r, eval = FALSE}
+anova(linearReg)
+```
+
+```{r, echo = FALSE}
+anova(linearReg)
+```
+
+### Model Evaluation Plot
+
+```{r, echo = FALSE}
+plot(linearReg)
 ```
 
 ## **Data Source**

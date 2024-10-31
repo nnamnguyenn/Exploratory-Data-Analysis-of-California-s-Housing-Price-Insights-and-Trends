@@ -41,7 +41,7 @@ distribution_graph <- function(display_value, break_down){
   )
 }
 
-distribution_graph("median_income", FALSE)
+
 
 #Box-Wishker Plot
 box_graph <- function(display_value){ 
@@ -59,9 +59,8 @@ box_graph <- function(display_value){
       plot.title = element_text(size = 17))
 }
 
-box_graph("housing_median_age")
 
-##Correlation
+
 
 
 
